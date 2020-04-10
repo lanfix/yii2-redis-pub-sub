@@ -42,3 +42,8 @@ And sending message to this channel
 ``` php
 Yii::$app->redisPubSub->publish('my-channel-name', 'Hello! How are you?');
 ```
+
+To unsubscribe from channel use
+``` php
+Yii::$app->redisPubSub->unsubscribe('my-channel-name');
+```
