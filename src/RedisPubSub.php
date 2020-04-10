@@ -50,8 +50,32 @@ class RedisPubSub extends Component
     }
 
     /**
+     * Prepare channel(s) name(s) to use
+     * @param string|string[] $channel channel(s) name
+     * @return array|string
+     * @throws Exception
+     */
+    private function prepareChannelName($channel)
+    {
+        if(is_string($channel)) {
+            $channel = [$channel];
+        }
+        elseif(is_array($channel)) {
+            foreach($channel as $item) {
+                if(!is_string($item)) {
+                    throw new Exception('Invalid channel name');
+                }
+            }
+        }
+        else {
+            throw new Exception('Invalid channel name');
+        }
+        return $channel;
+    }
+
+    /**
      * Publish message to channel
-     * @param string|string[] $channel channel name
+     * @param string|string[] $channel channel(s) name
      * @param mixed $message anything data (string, array, object, number...)
      * @return int number of clients that received the message
      * @throws Exception
@@ -79,7 +103,7 @@ class RedisPubSub extends Component
     /**
      * Subscribe to channel and set callback function
      * When a message arrives, the function is called
-     * @param string|string[] $channel channel name
+     * @param string|string[] $channel channel(s) name
      * @param callable $callback function that will be called when a message arrives on the channel
      * @return mixed|null
      * @throws Exception
@@ -89,21 +113,19 @@ class RedisPubSub extends Component
         if(!is_array($callback) && !is_string($callback) && !is_callable($callback)) {
             throw new Exception('Invalid callback');
         }
-        /** Channel must be array of strings */
-        if(is_string($channel)) {
-            $channel = [$channel];
-        }
-        elseif(is_array($channel)) {
-            foreach($channel as $item) {
-                if(!is_string($item)) {
-                    throw new Exception('Invalid channel name');
-                }
-            }
-        }
-        else {
-            throw new Exception('Invalid channel name');
-        }
+        $channel = $this->prepareChannelName($channel);
         return $this->redis->subscribe($channel, $callback);
+    }
+
+    /**
+     * Stop listening the channel
+     * @param string|string[] $channel channel(s) name
+     * @throws Exception
+     */
+    public function unsubscribe($channel = [])
+    {
+        $channel = $this->prepareChannelName($channel);
+        $this->redis->unsubscribe($channel);
     }
 
 }
