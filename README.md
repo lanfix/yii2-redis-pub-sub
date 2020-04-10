@@ -1,40 +1,45 @@
 # yii2-redis-pub-sub
-基于yii2通过redis的订阅／发布者模式实现的消息队列
 
-# install
-- 安装phpredis扩展
-- 安装代码
+This package is a component for **Yii2**. It realise a functions for **Redis** for
+publishing messages and subscribing to channels.
+
+## How to install 
+
 ``` php
 composer require --prefer-dist hollisho/yii2-redis-pub-sub
 ```
 
-# usage
-- 配置文件
+Or add this string to *composer.json*
 ``` php
-'redisPubSub'=>[
-    'class' => 'hollisho\redis_pub_sub\RedisPubSub',
+"lanfix/yii2-redis-pub-sub": "*"
+```
+
+## Set up
+
+Firstly add to configure file ```web.php``` this code
+``` php
+'redisPubSub' => [
+    'class' => 'lanfix\redis_pub_sub\RedisPubSub',
     'connect' => [
         'class' => 'yii\redis\Connection',
-        'hostname' => '127.0.0.1',
+        'hostname' => 'localhost',
         'port' => 6379,
         'database' => 0,
-        'password' => '',
-        'connectionTimeout' => 20,
+        'password' => ''
     ]
 ],
 ```
-- 使用
-```php
-//　前台发送
-/* @var $redisPubSub RedisPubSub */
-$redisPubSub = \Yii::$app->redisPubSub;
-$redisPubSub->publish('test', 'xxxxxxxxxxxxxxx');
 
-// console里面监听，并且处理，设置监听不超时
-/* @var $redisPubSub RedisPubSub */
-$redisPubSub = \Yii::$app->redisPubSub;
-$redisPubSub->setOptReadTimeout(-1);
-$redisPubSub->subscribe('test', function($instance, $channelName, $message) {
+## Usage
+
+Subscribe to Redis channel
+``` php
+Yii::$app->redisPubSub->subscribe('my-channel-name', function($instance, $channelName, $message) {
     var_dump($message);
 });
+```
+
+And sending message to this channel
+``` php
+Yii::$app->redisPubSub->publish('my-channel-name', 'Hello! How are you?');
 ```

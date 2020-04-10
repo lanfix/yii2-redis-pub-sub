@@ -1,21 +1,33 @@
 {
-    "name": "hollisho/yii2-redis-pub-sub",
-    "description": "Yii2 Redis pub/sub(Publish,Subscribe)",
+    "name": "lanfix/yii2-redis-pub-sub",
+    "description": "Yii2 pub/sub component for Redis",
+    "keywords": ["yii2", "redis", "pub", "sub"],
     "authors": [
         {
-            "name": "Hollis Ho",
-            "email": "he_wenzhi@126.com"
+            "name": "lanfix",
+            "email": "lanfix.object@gmail.com"
         }
     ],
     "license": "MIT",
     "support": {
-        "source": "https://github.com/hollisho/yii2-redis-pub-sub"
+        "source": "https://github.com/lanfix/yii2-redis-pub-sub"
     },
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=7.0.0",
+        "yiisoft/yii2": "2.0.34",
+        "yiisoft/yii2-redis": "2.0.12",
+        "ext-redis": "*"
     },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
     "autoload": {
-        "psr-4": { "hollisho\\redis_pub_sub\\": "src/" }
+        "psr-4": {
+            "lanfix\\redis_pub_sub\\": "src"
+        }
     }
 }
