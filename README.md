@@ -1,9 +1,8 @@
 # yii2-redis-pub-sub
 
-This package is a component for **Yii2**. It realise a functions for **Redis** for
-publishing messages and subscribing to channels.
+This library adds binding functions for **Redis** to publish and subscribe to channels.
 
-## How to install 
+## How to install
 
 ``` php
 composer require --prefer-dist hollisho/yii2-redis-pub-sub

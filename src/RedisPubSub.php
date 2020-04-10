@@ -13,10 +13,16 @@ class RedisPubSub extends Component
 {
 
     /**
+     * Array with settings for connection
+     * @var array $connect
+     */
+    public $connect;
+
+    /**
+     * Redis connection session
      * @var $redis Redis
      */
     private $redis;
-    public $connect;
 
     public function init()
     {
@@ -25,44 +31,79 @@ class RedisPubSub extends Component
         $this->connect['password'] && $this->redis->auth($this->connect['password']);
     }
 
-    public function setOptReadTimeout($timeout)
+    public function __call($name, $params)
     {
-        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, $timeout);
+        // TODO: Move to behaviors and call parent::
+        return call_user_func_array([$this->redis, $name], $params);
     }
 
-    public function publish($channel, $data)
+    /**
+     * Set Redis options like key-value
+     * Example: [Redis::OPT_READ_TIMEOUT => 2]
+     * @param array $options
+     */
+    public function setOptions(array $options)
+    {
+        foreach($options as $code => $value) {
+            $this->redis->setOption($code, $value);
+        }
+    }
+
+    /**
+     * Publish message to channel
+     * @param string|string[] $channel channel name
+     * @param mixed $message anything data (string, array, object, number...)
+     * @return int number of clients that received the message
+     * @throws Exception
+     */
+    public function publish($channel, $message)
     {
         if(is_string($channel)) {
-            return $this->redis->publish($channel, serialize($data));
+            return $this->redis->publish($channel, serialize($message));
         }
-        if(!is_array($channel)) {
-            throw new Exception('invalid queue');
-        }
-        try {
-            foreach ($channel as $item) {
-                $this->redis->publish($item, serialize($data));
+        elseif(is_array($channel)) {
+            $successTimes = 0;
+            $clients = 0;
+            foreach($channel as $item) {
+                if(!is_string($item)) break;
+                $clients += $this->redis->publish($item, serialize($message));
+                $successTimes++;
+            }
+            if($successTimes == count($channel)) {
+                return $clients;
             }
         }
-        catch (Exception $e) {
-            throw $e;
-        }
-        return true;
+        throw new Exception('Invalid channel name');
     }
 
-    public function subscribe($channel, $callback)
+    /**
+     * Subscribe to channel and set callback function
+     * When a message arrives, the function is called
+     * @param string|string[] $channel channel name
+     * @param callable $callback function that will be called when a message arrives on the channel
+     * @return mixed|null
+     * @throws Exception
+     */
+    public function subscribe($channel, callable $callback)
     {
         if(!is_array($callback) && !is_string($callback) && !is_callable($callback)) {
-            throw new Exception('invalid callback');
+            throw new Exception('Invalid callback');
         }
+        /** Channel must be array of strings */
         if(is_string($channel)) {
             $channel = [$channel];
         }
+        elseif(is_array($channel)) {
+            foreach($channel as $item) {
+                if(!is_string($item)) {
+                    throw new Exception('Invalid channel name');
+                }
+            }
+        }
+        else {
+            throw new Exception('Invalid channel name');
+        }
         return $this->redis->subscribe($channel, $callback);
-    }
-
-    public function __call($name, $params)
-    {
-        return call_user_func_array([$this->redis, $name], $params);
     }
 
 }
