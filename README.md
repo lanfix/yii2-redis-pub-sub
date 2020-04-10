@@ -5,7 +5,7 @@ This library adds binding functions for **Redis** to publish and subscribe to ch
 ## How to install
 
 ``` php
-composer require --prefer-dist hollisho/yii2-redis-pub-sub
+composer require --prefer-dist lanfix/yii2-redis-pub-sub
 ```
 
 Or add this string to *composer.json*
