@@ -4,6 +4,12 @@ This library adds binding functions for **Redis** to publish and subscribe to ch
 
 ## How to install
 
+You must do it for prepare system to work:
+- Compile php with php-redis extension if you use php-fpm or install php-redis
+apache module in other case.
+- Enable php-redis in *php.ini* ``` extension=redis ```
+
+Next install this library with composer
 ``` php
 composer require --prefer-dist lanfix/yii2-redis-pub-sub
 ```
