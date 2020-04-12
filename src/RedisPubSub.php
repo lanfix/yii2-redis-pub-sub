@@ -114,7 +114,9 @@ class RedisPubSub extends Component
             throw new Exception('Invalid callback');
         }
         $channel = $this->prepareChannelName($channel);
-        return $this->redis->subscribe($channel, $callback);
+        return $this->redis->subscribe($channel, function($redis, $chanel, $message) use ($callback) {
+            call_user_func_array($callback, [$message]);
+        });
     }
 
     /**
