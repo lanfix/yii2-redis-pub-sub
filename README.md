@@ -26,10 +26,8 @@ Firstly add to configure file ```web.php``` this code
 'redisPubSub' => [
     'class' => 'lanfix\redis_pub_sub\RedisPubSub',
     'connect' => [
-        'class' => 'yii\redis\Connection',
         'hostname' => 'localhost',
         'port' => 6379,
-        'database' => 0,
         'password' => ''
     ]
 ],
@@ -37,9 +35,11 @@ Firstly add to configure file ```web.php``` this code
 
 ## Usage
 
-Subscribe to Redis channel
+Subscribe to Redis channel  
+###### Warning! It function stops your application and wait messages!  
+It is desirable to run this function in parallel or in other daemon
 ``` php
-Yii::$app->redisPubSub->subscribe('my-channel-name', function($instance, $channelName, $message) {
+Yii::$app->redisPubSub->subscribe('my-channel-name', function($message) {
     var_dump($message);
 });
 ```

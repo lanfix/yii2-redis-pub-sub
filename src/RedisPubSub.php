@@ -27,8 +27,14 @@ class RedisPubSub extends Component
     public function init()
     {
         $this->redis = new Redis();
-        $this->redis->connect($this->connect['hostname'], $this->connect['port'], $this->connect['connectionTimeout']);
-        $this->connect['password'] && $this->redis->auth($this->connect['password']);
+        $this->redis->connect(
+            $this->connect['hostname'] ?? 'localhost',
+            $this->connect['port'] ?? 6379,
+            $this->connect['connectionTimeout'] ?? 0
+        );
+        if(isset($this->connect['password']) && $this->connect['password']) {
+            $this->redis->auth($this->connect['password']);
+        }
     }
 
     public function __call($name, $params)
